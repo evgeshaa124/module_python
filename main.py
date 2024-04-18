@@ -197,8 +197,27 @@ class Game:
         self.game_over = False
 
     def move(self, player, start_pos, end_pos):
-        # make a move
-        pass
+        if self.game_over:
+            raise HTTPException(status_code=400, detail="The game is over.")
+        
+        if self.current_turn == Color.WHITE:
+            player_color = Color.WHITE
+        else:
+            player_color = Color.BLACK
+
+        if self.board.move_piece(start_pos, end_pos):
+            # Переміщення було успішним
+            self.current_turn = Color.WHITE if self.current_turn == Color.BLACK else Color.BLACK
+
+            # Перевірка на шах та мат
+            if self.board.is_check(player_color):
+                if self.board.is_checkmate(player_color):
+                    self.end_game()
+                    return "Checkmate! Game over."
+
+            return "Move successful."
+        else:
+            return "Invalid move."
 
     def end_game(self):
         self.game_over = True
@@ -213,8 +232,10 @@ def start_game():
 
 @app.post("/move/")
 def move(move: Move):
-    # make a move
-    pass
+    start_pos = move.start_pos
+    end_pos = move.end_pos
+    result = game.move(start_pos, end_pos)
+    return {"message": result}
 
 @app.post("/end_game/")
 def end_game():
