@@ -72,7 +72,6 @@ class Rook(Piece):
         return False
 
 class Bishop(Piece):
-    def can_move(self, board, start_pos, end_pos):
         def can_move(self, board, start_pos, end_pos):
             start_row, start_col = start_pos
             end_row, end_col = end_pos
